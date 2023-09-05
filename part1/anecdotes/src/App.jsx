@@ -12,17 +12,31 @@ const App = () => {
     'The only way to go fast is to go well.',
   ]
 
-  const [selected, setSelected] = useState(0);
+  const initialVotes = new Array(anecdotes.length).fill(0) 
+  const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(initialVotes)
 
   const randomAnecdote = () => {
-    const random = Math.floor(Math.random() * anecdotes.length);
+    const random = Math.floor(Math.random() * anecdotes.length)
     //console.log(random)
-    setSelected(random);
+    setSelected(random)
   }
 
-  const Button = (props) => (
-    <button onClick={props.handleClick}>Next anecdote</button>
+  const quoteVotes = () => {
+    setVotes((prevVotes) => {
+      const updatedVotes = [...prevVotes]
+      updatedVotes[selected]++
+      return updatedVotes
+    })
+  }
+
+  const Button = ({ handleClick, text }) => (
+    <button onClick={handleClick}>{text}</button>
   )
+
+  const setToSelected = (newValue) => {
+    setSelected(newValue)
+  }
 
   const Display = (props) => (
     <div>
@@ -32,10 +46,15 @@ const App = () => {
 
   return (
     <div>
-      <Display anecdotes={anecdotes} />
-      <Button handleClick={() => randomAnecdote()} />
+      <div>
+        <h2>Anecdote of the day</h2>
+        <Display anecdotes={anecdotes} />
+        <p>has {votes[selected]} votes</p>
+        <Button handleClick={quoteVotes} text="Vote" />
+        <Button handleClick={randomAnecdote } text="Next anecdote" />
+      </div>
     </div>
   )
 }
 
-export default App;
+export default App
