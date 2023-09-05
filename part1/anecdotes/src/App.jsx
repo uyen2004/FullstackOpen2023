@@ -34,10 +34,6 @@ const App = () => {
     <button onClick={handleClick}>{text}</button>
   )
 
-  const setToSelected = (newValue) => {
-    setSelected(newValue)
-  }
-
   const Display = (props) => (
     <div>
       <p>{props.anecdotes[selected]}</p>
