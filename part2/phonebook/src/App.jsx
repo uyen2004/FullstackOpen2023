@@ -32,10 +32,25 @@ const App = () => {
     setNewPhone(event.target.value)
   }
 
+  const handleDelete = (id) => {
+    const personToDelete = persons.find(person => person.id === id)
+    if (!personToDelete) return
+
+    const confirmDelete = window.confirm(`Delete ${personToDelete.name}?`)
+    if (confirmDelete) {
+      axios.delete(`http://localhost:3001/persons/${id}`)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(error => {
+          console.error('Error on deleting:', error)
+        })
+    }
+  }
   const addPerson = (event) => {
     event.preventDefault()
     if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already in the phonebook.`);
+      alert(`${newName} is already in the phonebook.`)
       setNewName('');
       setNewPhone('')
       return
@@ -71,7 +86,7 @@ const App = () => {
         addPerson={addPerson} 
       />
       <h3>Numbers</h3>
-      <Person filteredPersons={filteredPersons} />
+      <Person filteredPersons={filteredPersons}  handleDelete={handleDelete}/>
     </div>
   )
 }
