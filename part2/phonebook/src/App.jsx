@@ -21,7 +21,7 @@ const App = () => {
   const [search, setSearch] = useState('')
 
   const handleSearchChange = (event) => {
-    setSearch(event.target.value);
+    setSearch(event.target.value)
   }
 
   const handleNameChange = (event) => {
@@ -49,28 +49,51 @@ const App = () => {
   }
   const addPerson = (event) => {
     event.preventDefault()
-    if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already in the phonebook.`)
-      setNewName('');
-      setNewPhone('')
-      return
+  
+    const existingPerson = persons.find((person) => person.name === newName)
+  
+    if (existingPerson) {
+      const confirmReplace = window.confirm(
+        `${newName} is already in the phonebook, replace the old number with a new one?`
+      )
+  
+      if (confirmReplace) {
+        const updatedPerson = { ...existingPerson, number: newPhone }
+  
+        personService
+          .update(existingPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id === existingPerson.id ? returnedPerson : person
+              )
+            )
+            setNewName('')
+            setNewPhone('')
+          })
+          .catch((error) => {
+            console.error('Cannot replace:', error);
+          })
+      }
+    } else {
+      const personObject = {
+        name: newName,
+        number: newPhone,
+      }
+  
+      personService
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons([...persons, returnedPerson])
+          setNewName('')
+          setNewPhone('')
+        })
+        .catch((error) => {
+          console.error('Cannot create person:', error)
+        })
     }
-    const personObject = {
-      name: newName,
-      number : newPhone,
-      id: persons.length + 1,
-    }
-
-    personService
-      .create(personObject)
-      .then(returnedPerson => {
-        setPersons([...persons, returnedPerson])
-        setNewName('')
-        setNewPhone('')
-      })
-
   }
-
+  
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
   )
