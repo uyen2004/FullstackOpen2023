@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import Person from './components/Persons';
-import PersonForm from './components/PersonForm';
-import Filter from './components/Filter';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react'
+import Person from './components/Persons'
+import PersonForm from './components/PersonForm'
+import Filter from './components/Filter'
+import axios from 'axios'
 import personService from './services/Persons'
+import './index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
+  const [noti, setNoti] = useState('')
 
   useEffect(() => {
     personService
@@ -70,6 +72,12 @@ const App = () => {
             )
             setNewName('')
             setNewPhone('')
+            setNoti(
+              `Added '${personObject.name}' `
+            )
+            setTimeout(() => {
+              setNoti(null)
+            }, 5000)
           })
           .catch((error) => {
             console.error('Cannot replace:', error);
@@ -87,6 +95,12 @@ const App = () => {
           setPersons([...persons, returnedPerson])
           setNewName('')
           setNewPhone('')
+          setNoti(
+            `Added ${personObject.name} `
+          )
+          setTimeout(() => {
+            setNoti(null)
+          }, 5000)
         })
         .catch((error) => {
           console.error('Cannot create person:', error)
@@ -98,9 +112,23 @@ const App = () => {
     person.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
   )
 
+  const Notification = ({ message }) => {
+    if (message === null) {
+      return null
+    }
+    return (
+      <div className='noti'>
+        {message}
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <h1>Notes</h1>  
+      <Notification message={noti} />
+      <div></div>
       <Filter search ={search} handleSearchChange = {handleSearchChange} />
       <h3>Add a new</h3>
       <PersonForm 
