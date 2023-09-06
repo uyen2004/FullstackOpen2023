@@ -7,15 +7,18 @@ import personService from './services/Persons'
 import './index.css'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
-  const [noti, setNoti] = useState('')
+  const [persons, setPersons] = useState([]);
+  const [noti, setNoti] = useState({ message: null, isError: false })
 
   useEffect(() => {
     personService
-    .getAll()
-    .then(initialPersons => {
-      setPersons(initialPersons)
-    })
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error)
+      })
   }, [])
 
   const [newName, setNewName] = useState('')
@@ -34,34 +37,51 @@ const App = () => {
     setNewPhone(event.target.value)
   }
 
+  const [isDeleting, setIsDeleting] = useState(false)
+
   const handleDelete = (id) => {
     const personToDelete = persons.find(person => person.id === id)
     if (!personToDelete) return
 
+    setIsDeleting(true)
+
     const confirmDelete = window.confirm(`Delete ${personToDelete.name}?`)
     if (confirmDelete) {
-      axios.delete(`http://localhost:3001/persons/${id}`)
+      personService
+        .deletePerson(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
+          setNoti({ message: `Deleted '${personToDelete.name}'`, isError: false })
+          setTimeout(() => {
+            setNoti({ message: null, isError: false })
+          }, 5000)
         })
         .catch(error => {
           console.error('Error on deleting:', error)
+          setNoti({ message: 'Error deleting the person', isError: true })
+          setTimeout(() => {
+            setNoti({ message: null, isError: false })
+          }, 5000)
+        })
+        .finally(() => { 
+          setIsDeleting(false)
         })
     }
   }
+
   const addPerson = (event) => {
     event.preventDefault()
-  
+
     const existingPerson = persons.find((person) => person.name === newName)
-  
-    if (existingPerson) {
+
+    if (existingPerson && !isDeleting) { 
       const confirmReplace = window.confirm(
         `${newName} is already in the phonebook, replace the old number with a new one?`
       )
-  
+
       if (confirmReplace) {
         const updatedPerson = { ...existingPerson, number: newPhone }
-  
+
         personService
           .update(existingPerson.id, updatedPerson)
           .then((returnedPerson) => {
@@ -72,15 +92,17 @@ const App = () => {
             )
             setNewName('')
             setNewPhone('')
-            setNoti(
-              `Added '${personObject.name}' `
-            )
+            setNoti({ message: `Updated '${returnedPerson.name}'`, isError: false })
             setTimeout(() => {
-              setNoti(null)
+              setNoti({ message: null, isError: false })
             }, 5000)
           })
           .catch((error) => {
-            console.error('Cannot replace:', error);
+            console.error('Cannot update person:', error)
+            setNoti({ message: `'${existingPerson.name}' has already been removed from this server`, isError: true })
+            setTimeout(() => {
+              setNoti({ message: null, isError: false })
+            }, 5000)
           })
       }
     } else {
@@ -88,37 +110,41 @@ const App = () => {
         name: newName,
         number: newPhone,
       }
-  
+
       personService
         .create(personObject)
         .then((returnedPerson) => {
           setPersons([...persons, returnedPerson])
           setNewName('')
           setNewPhone('')
-          setNoti(
-            `Added ${personObject.name} `
-          )
+          setNoti({ message: `Added '${returnedPerson.name}'`, isError: false })
           setTimeout(() => {
-            setNoti(null)
+            setNoti({ message: null, isError: false });
           }, 5000)
         })
         .catch((error) => {
-          console.error('Cannot create person:', error)
+          console.error('Cannot create person:', error);
+          setNoti({ message: `'${newName}' has already been removed from this server`, isError: true });
+          setTimeout(() => {
+            setNoti({ message: null, isError: false })
+          }, 5000)
         })
     }
   }
-  
+
+
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
   )
 
   const Notification = ({ message }) => {
-    if (message === null) {
+    if (!message) {
       return null
     }
+
     return (
-      <div className='noti'>
-        {message}
+      <div className={message.isError ? 'error' : 'success'}>
+        {message.message}
       </div>
     )
   }
@@ -126,20 +152,21 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <h1>Notes</h1>  
+      <h1>Notes</h1>
       <Notification message={noti} />
-      <div></div>
-      <Filter search ={search} handleSearchChange = {handleSearchChange} />
+      <Filter search={search} handleSearchChange={handleSearchChange} />
       <h3>Add a new</h3>
-      <PersonForm 
-        newName={newName} newPhone={newPhone} 
-        handleNameChange={handleNameChange} handlePhoneChange={handlePhoneChange} 
-        addPerson={addPerson} 
+      <PersonForm
+        newName={newName}
+        newPhone={newPhone}
+        handleNameChange={handleNameChange}
+        handlePhoneChange={handlePhoneChange}
+        addPerson={addPerson}
+        noti={noti}
       />
       <h3>Numbers</h3>
-      <Person filteredPersons={filteredPersons}  handleDelete={handleDelete}/>
+      <Person filteredPersons={filteredPersons} handleDelete={handleDelete} />
     </div>
   )
 }
-
 export default App
