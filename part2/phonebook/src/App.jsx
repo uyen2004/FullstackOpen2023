@@ -42,6 +42,13 @@ const App = () => {
       number : newPhone,
       id: persons.length + 1,
     }
+
+    axios
+    .post('http://localhost:3001/persons', personObject) 
+    .then((response) => {
+      addPerson(response.data)
+    })
+
     setPersons([...persons, personObject])
     setNewName('')
     setNewPhone('')
