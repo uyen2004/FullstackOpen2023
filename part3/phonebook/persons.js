@@ -57,6 +57,30 @@ app.delete('/api/persons/:id', (req, res) => {
   res.status(204).end()
 })
 
+app.post('/api/persons', (req, res) => {
+  const body = req.body;
+
+  if (!body.name || !body.number) {
+    return res.status(400).end();
+  }
+
+  const id = generateUniqueId()
+  const newPerson = {
+    id,
+    name: body.name,
+    number: body.number,
+  }
+
+  persons = persons.concat(newPerson)
+  res.json(newPerson)
+})
+
+function generateUniqueId() {
+
+  return Math.floor(Math.random() * 100);
+}
+
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
 })
