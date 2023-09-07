@@ -24,8 +24,19 @@ let persons = [
     content: "Mary Poppendick",
     number : "39-23-6423122"
   }
-
 ]
+
+app.get('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  const person = persons.find((p) => p.id === id);
+
+  if (!person) {
+    return res.status(404).json({ error: 'Invalid id' })
+  }
+
+  res.json(person);
+});
+
 app.get('/info', (req, res) => {
   const requestTime = new Date()
   const numberOfEntries = persons.length
