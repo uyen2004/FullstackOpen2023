@@ -61,7 +61,11 @@ app.post('/api/persons', (req, res) => {
   const body = req.body;
 
   if (!body.name || !body.number) {
-    return res.status(400).end();
+    return res.status(400).json({ error: 'Name and number are required' })
+  }
+
+  if (persons.some((person) => person.name === body.name)) {
+    return res.status(400).json({ error: 'Name must be unique' })
   }
 
   const id = generateUniqueId()
@@ -76,7 +80,6 @@ app.post('/api/persons', (req, res) => {
 })
 
 function generateUniqueId() {
-
   return Math.floor(Math.random() * 100);
 }
 
