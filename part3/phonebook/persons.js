@@ -25,10 +25,13 @@ let persons = [
     number : "39-23-6423122"
   }
 ]
+app.get('/api/persons', (req, res) => {
+  res.json(persons)
+})
 
 app.get('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
-  const person = persons.find((p) => p.id === id);
+  const person = persons.find((p) => p.id === id)
 
   if (!person) {
     return res.status(404).json({ error: 'Invalid id' })
@@ -46,6 +49,12 @@ app.get('/info', (req, res) => {
     <p> ${requestTime}</p>
     </div>
   `)
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id);
+  persons = persons.filter((p) => p.id !== id)
+  res.status(204).end()
 })
 
 app.listen(port, () => {
