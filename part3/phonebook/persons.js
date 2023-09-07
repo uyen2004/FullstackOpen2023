@@ -1,4 +1,5 @@
 import express from 'express'
+import morgan from 'morgan'
 
 const app = express()
 const port = 3001
@@ -83,6 +84,7 @@ function generateUniqueId() {
   return Math.floor(Math.random() * 100);
 }
 
+app.use(morgan('tiny'))
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
