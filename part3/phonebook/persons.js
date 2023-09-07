@@ -1,4 +1,4 @@
-import express from 'express';
+import express from 'express'
 
 const app = express()
 const port = 3001
@@ -27,16 +27,16 @@ let persons = [
 
 ]
 app.get('/info', (req, res) => {
-  const requestTime = new Date();
-  const numberOfEntries = persons.length;
+  const requestTime = new Date()
+  const numberOfEntries = persons.length
   res.send(`
     <div>
     <p>Phone book has info for ${numberOfEntries} people</p>
     <p> ${requestTime}</p>
     </div>
-  `);
-});
+  `)
+})
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+  console.log(`Server is running on port ${port}`)
+})
