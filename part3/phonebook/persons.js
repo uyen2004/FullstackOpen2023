@@ -4,6 +4,12 @@ import morgan from 'morgan'
 const app = express()
 const port = 3001
 
+morgan.token('req-body', (req, res) => {
+  return JSON.stringify(req.body)
+})
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
+
 let persons = [
   {
     id: 1,
@@ -85,6 +91,7 @@ function generateUniqueId() {
 }
 
 app.use(morgan('tiny'))
+app.use(json())
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
