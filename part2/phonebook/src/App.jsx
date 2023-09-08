@@ -14,6 +14,7 @@ const App = () => {
     personService
       .getAll()
       .then(initialPersons => {
+        console.log("Response received:", initialPersons)
         setPersons(initialPersons);
       })
       .catch(error => {
@@ -71,17 +72,17 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-
+  
     const existingPerson = persons.find((person) => person.name === newName)
-
-    if (existingPerson && !isDeleting) { 
+  
+    if (existingPerson && !isDeleting) {
       const confirmReplace = window.confirm(
         `${newName} is already in the phonebook, replace the old number with a new one?`
       )
-
+  
       if (confirmReplace) {
         const updatedPerson = { ...existingPerson, number: newPhone }
-
+  
         personService
           .update(existingPerson.id, updatedPerson)
           .then((returnedPerson) => {
@@ -89,7 +90,7 @@ const App = () => {
               persons.map((person) =>
                 person.id === existingPerson.id ? returnedPerson : person
               )
-            )
+            );
             setNewName('')
             setNewPhone('')
             setNoti({ message: `Updated '${returnedPerson.name}'`, isError: false })
@@ -98,8 +99,11 @@ const App = () => {
             }, 5000)
           })
           .catch((error) => {
-            console.error('Cannot update person:', error)
-            setNoti({ message: `'${existingPerson.name}' has already been removed from this server`, isError: true })
+            console.error('Cannot update person:', error);
+            setNoti({
+              message: `'${existingPerson.name}' has already been removed from this server`,
+              isError: true,
+            })
             setTimeout(() => {
               setNoti({ message: null, isError: false })
             }, 5000)
@@ -110,7 +114,7 @@ const App = () => {
         name: newName,
         number: newPhone,
       }
-
+  
       personService
         .create(personObject)
         .then((returnedPerson) => {
@@ -119,23 +123,34 @@ const App = () => {
           setNewPhone('')
           setNoti({ message: `Added '${returnedPerson.name}'`, isError: false })
           setTimeout(() => {
-            setNoti({ message: null, isError: false });
+            setNoti({ message: null, isError: false })
           }, 5000)
         })
         .catch((error) => {
-          console.error('Cannot create person:', error);
-          setNoti({ message: `'${newName}' has already been removed from this server`, isError: true });
+          console.error('Error creating person:', error)
+          setNoti({
+            message: `Error creating '${newName}'`,
+            isError: true,
+          })
           setTimeout(() => {
             setNoti({ message: null, isError: false })
           }, 5000)
         })
     }
   }
+  
 
 
-  const filteredPersons = persons.filter((person) =>
-    person.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
-  )
+  const filteredPersons = persons.filter((person) => {
+    if (!search) {
+      return true
+    }
+    if (!person.name) {
+      return false
+    }
+    return person.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
+  })
+  
 
   const Notification = ({ message }) => {
     if (!message) {
@@ -166,6 +181,7 @@ const App = () => {
       />
       <h3>Numbers</h3>
       <Person filteredPersons={filteredPersons} handleDelete={handleDelete} />
+      {console.log(filteredPersons)}
     </div>
   )
 }
