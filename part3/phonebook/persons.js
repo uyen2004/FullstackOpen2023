@@ -1,34 +1,38 @@
 import express from 'express'
 import morgan from 'morgan'
+import cors from 'cors'
+
 
 const app = express()
-const port = 3001
 
+app.use(cors())
 morgan.token('req-body', (req, res) => {
   return JSON.stringify(req.body)
 })
 
+app.use(cors())
+app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :req-body'))
 
 let persons = [
   {
     id: 1,
-    content: "Arto Hellas",
+    name: "Arto Hellas",
     number: "040-123456"
   },
   {
     id: 2,
-    content: "Ada Lovelace",
+    name: "Ada Lovelace",
     nummber: "39-44-532523"
   },
   {
     id: 3,
-    content: "Dan Abramov",
+    name: "Dan Abramov",
     number : "12-43-234345"
   },
   {
     id: 4,
-    content: "Mary Poppendick",
+    name: "Mary Poppendick",
     number : "39-23-6423122"
   }
 ]
@@ -44,8 +48,8 @@ app.get('/api/persons/:id', (req, res) => {
     return res.status(404).json({ error: 'Invalid id' })
   }
 
-  res.json(person);
-});
+  res.json(person)
+})
 
 app.get('/info', (req, res) => {
   const requestTime = new Date()
@@ -65,7 +69,7 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {
-  const body = req.body;
+  const body = req.body
 
   if (!body.name || !body.number) {
     return res.status(400).json({ error: 'Name and number are required' })
@@ -86,13 +90,32 @@ app.post('/api/persons', (req, res) => {
   res.json(newPerson)
 })
 
+app.put('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  const updatedPerson = req.body
+
+  const personIndex = persons.findIndex((p) => p.id === id)
+
+  if (personIndex === -1) {
+    return res.status(404).json({ error: 'Person not found' })
+  }
+
+  persons[personIndex] = {
+    ...persons[personIndex],
+    ...updatedPerson,
+  }
+
+  res.json(persons[personIndex])
+})
+
 function generateUniqueId() {
-  return Math.floor(Math.random() * 100);
+  return Math.floor(Math.random() * 100)
 }
 
 app.use(morgan('tiny'))
-app.use(json())
+app.use(express.json())
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
 })
