@@ -76,7 +76,7 @@ app.post('/api/persons', (req, res) => {
   }
 
   if (persons.some((person) => person.name === body.name)) {
-    return res.status(400).json({ error: 'Name must be unique' })
+    return res.status(400).json({ error: 'Existed name' })
   }
 
   const id = generateUniqueId()
@@ -115,7 +115,7 @@ function generateUniqueId() {
 app.use(morgan('tiny'))
 app.use(express.json())
 
-const PORT = process.env.PORT || 3001
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+const port = 3000
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server is listening on ${port}`);
+});
