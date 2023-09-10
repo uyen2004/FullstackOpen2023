@@ -1,3 +1,11 @@
+# fly.toml app configuration file generated for phonebookfso2023 on 2023-09-10T23:34:13+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "phonebookfso2023"
+primary_region = "arn"
+
 [build]
 
 [env]
@@ -10,4 +18,3 @@
   auto_start_machines = true
   min_machines_running = 0
   processes = ["app"]
-
