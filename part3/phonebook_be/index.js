@@ -1,53 +1,63 @@
 const express = require('express')
 const app = express()
-
 const morgan = require('morgan')
+const mongoose = require('mongoose')
+const cors = require('cors')
+const router = express.Router()
+require('dotenv').config()
+
 app.use(express.json())
 app.use(morgan('tiny'))
-
-const cors = require('cors')
-
 app.use(cors())
 
-  morgan.token('req-body', (req) => {
-    if (req.method === 'POST') {
-      return JSON.stringify(req.body)
-    }
-    return ''
+const mongoURI = process.env.MONGODB_URI
+
+mongoose
+  .connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('Connected to MongoDB')
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error)
   })
 
-  app.use(
-    morgan(':method :url :status :res[content-length] - :response-time ms :req-body')
-  )
+  app.use('/api', router)
 
-let persons= [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-]
 
-app.get('/api/persons', (req, res) => {
-    res.json(persons)
-  })
+morgan.token('req-body', (req) => {
+  if (req.method === 'POST') {
+    return JSON.stringify(req.body)
+  }
+  return ''
+})
 
-app.get('/info', (req, res) => {
+app.use(
+  morgan(':method :url :status :res[content-length] - :response-time ms :req-body')
+)
+
+const personSchema = new mongoose.Schema({
+  name: String,
+  number: String,
+})
+
+const Person = mongoose.model('Person', personSchema)
+
+router.get('/persons', (req, res) => {
+  Person.find({})
+    .then((persons) => {
+      res.json(persons)
+    })
+    .catch((error) => {
+      console.error('Error fetching persons:', error)
+      res.status(500).json({ error: 'Internal Server Error' })
+    })
+})
+
+
+router.get('/info', (req, res) => {
     const requestTime = new Date()
     const numberOfEntries = persons.length
     res.send(`
@@ -58,50 +68,59 @@ app.get('/info', (req, res) => {
     `)
   })
 
-  app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find((p) => p.id === id)
+  router.get('/persons/:id', (req, res) => {
+    const id = req.params.id
+      Person.findById(id)
+      .then((person) => {
+        if (!person) {
+          return res.status(404).json({ error: 'Person not found' })
+        }
+        res.json(person)
+      })
+      .catch((error) => {
+        console.error('Error fetching person by ID:', error)
+      })
+  })
   
-    if (!person) {
-      return res.status(404).json({ error: 'the given id is not found' })
+
+  router.delete('/persons/:id', (req, res) => {
+    const id = req.params.id
+  
+    if (!id) {
+      return res.status(400).json({ error: 'Invalid ID' })
     }
-    res.json(person)
+  
+    Person.findByIdAndRemove(id, (error, result) => {
+      if (error) {
+        console.error('Error deleting person:', error)
+        return res.status(500).json({ error: 'Internal Server Error' })
+      }
+  
+      if (!result) {
+        return res.status(404).json({ error: 'Person not found' })
+      }
+      res.status(204).end()
+    })
+  })
+  
+
+  router.post('/persons', async (req, res) => {
+    const body = req.body;
+  
+    try {
+      const newPerson = new Person({
+        name: body.name,
+        number: body.number,
+      })
+  
+      const savedPerson = await newPerson.save()
+      res.json(savedPerson);
+    } catch (error) {
+      console.error('Error creating person:', error)
+    }
   })
 
-  app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    persons = persons.filter((p) => p.id !== id)
-    res.status(204).end()
-  })
-
-  app.post('/api/persons', (req, res) => {
-    const body = req.body
-    console.log('Request body:', body)
-  
-    if (!body.name || !body.number) {
-      return res.status(400).json({ error: 'Name and number are required' })
-    }
-  
-    if (persons.some((person) => person.name === body.name)) {
-      return res.status(400).json({ error: 'Existed name' })
-    }
-  
-    const id = generateUniqueId()
-    const newPerson = {
-      id,
-      name: body.name,
-      number: body.number,
-    }
-  
-    persons = persons.concat(newPerson)
-    res.json(newPerson)
-  })
-
-  function generateUniqueId() {
-    return Math.floor(Math.random() * 100)
-  }
-
-  app.put('/api/persons/:id', (req, res) => {
+  router.put('/persons/:id', (req, res) => {
     const id = Number(req.params.id)
     const updatedPerson = req.body
   
@@ -122,5 +141,5 @@ app.get('/info', (req, res) => {
   const port = 3000
 
   app.listen(port, '0.0.0.0', () => {
-    console.log(`Server is listening on ${port}`);
+    console.log(`Server is listening on ${port}`)
   })
