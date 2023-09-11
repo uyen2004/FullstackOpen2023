@@ -4,7 +4,10 @@ const app = express()
 const morgan = require('morgan')
 app.use(express.json())
 app.use(morgan('tiny'))
-const port = 3001
+
+const cors = require('cors')
+
+app.use(cors())
 
   morgan.token('req-body', (req) => {
     if (req.method === 'POST') {
@@ -41,8 +44,8 @@ let persons= [
 ]
 
 app.get('/api/persons', (req, res) => {
-  res.json(phonebookEntries);
-})
+    res.json(persons)
+  })
 
 app.get('/info', (req, res) => {
     const requestTime = new Date()
@@ -98,6 +101,26 @@ app.get('/info', (req, res) => {
     return Math.floor(Math.random() * 100)
   }
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
-})
+  app.put('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const updatedPerson = req.body
+  
+    const personIndex = persons.findIndex((p) => p.id === id)
+  
+    if (personIndex === -1) {
+      return res.status(404).json({ error: 'Person not found' })
+    }
+  
+    persons[personIndex] = {
+      ...persons[personIndex],
+      ...updatedPerson,
+    }
+  
+    res.json(persons[personIndex])
+  })
+  app.use(express.static('dist'))
+  const port = 3000
+
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`Server is listening on ${port}`);
+  })
