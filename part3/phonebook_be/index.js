@@ -1,28 +1,28 @@
 const express = require('express')
 const app = express()
-
+app.use(express.json());
 const port = 3001
 
 let persons= [
   {
     id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456',
+    name: "Arto Hellas",
+    number: "040-123456",
   },
   {
     id: 2,
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
+    name: "Ada Lovelace",
+    number: "39-44-5323523",
   },
   {
     id: 3,
-    name: 'Dan Abramov',
-    number: '12-43-234345',
+    name: "Dan Abramov",
+    number: "12-43-234345",
   },
   {
     id: 4,
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
+    name: "Mary Poppendieck",
+    number: "39-23-6423122",
   },
 ]
 
@@ -58,6 +58,33 @@ app.get('/info', (req, res) => {
     res.status(204).end()
   })
 
+  app.post('/api/persons', (req, res) => {
+    const body = req.body
+    console.log('Request body:', body)
+  
+    if (!body.name || !body.number) {
+      return res.status(400).json({ error: 'Name and number are required' })
+    }
+  
+    if (persons.some((person) => person.name === body.name)) {
+      return res.status(400).json({ error: 'Existed name' })
+    }
+  
+    const id = generateUniqueId()
+    const newPerson = {
+      id,
+      name: body.name,
+      number: body.number,
+    }
+  
+    persons = persons.concat(newPerson)
+    res.json(newPerson)
+  })
+
+  function generateUniqueId() {
+    return Math.floor(Math.random() * 100)
+  }
+
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`)
 })
