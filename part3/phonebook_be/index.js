@@ -48,7 +48,6 @@ app.get('/info', (req, res) => {
     if (!person) {
       return res.status(404).json({ error: 'the given id is not found' })
     }
-  
     res.json(person)
   })
 
