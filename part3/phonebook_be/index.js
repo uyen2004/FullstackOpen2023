@@ -76,15 +76,18 @@ router.delete('/persons/:id', async (req, res) => {
 })
 
 app.get('/info', (req, res) => {
+  Person.find({}).then((persons) => {
     const requestTime = new Date()
     const numberOfEntries = persons.length
     res.send(`
       <div>
-      <p>Phone book has info for ${numberOfEntries} people</p>
-      <p> ${requestTime}</p>
+        <p>Phone book has info for ${numberOfEntries} people</p>
+        <p>${requestTime}</p>
       </div>
     `)
   })
+})
+
 
   router.get('/persons/:id', (req, res) => {
     const id = req.params.id
