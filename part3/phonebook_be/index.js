@@ -137,6 +137,20 @@ router.get('/info', (req, res) => {
   
     res.json(persons[personIndex])
   })
+
+  const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+  }
+   app.use(unknownEndpoint)
+
+   const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+    response.status(500).json({ error: 'Internal Server Error' })
+    next(error)
+  }
+  
+  app.use(errorHandler)
+
   app.use(express.static('dist'))
   const port = 3000
 
