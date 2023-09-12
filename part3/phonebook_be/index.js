@@ -56,6 +56,26 @@ router.get('/persons', (req, res) => {
     })
 })
 
+router.delete('/persons/:id', async (req, res) => {
+  const id = req.params.id
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: 'Invalid ID format' })
+  }
+
+  try {
+    const removedPerson = await Person.findByIdAndRemove(id)
+    if (!removedPerson) {
+      return res.status(404).json({ error: 'Person not found' })
+    }
+    res.status(204).end()
+  } catch (error) {
+    console.error('Error deleting person:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
+
 
 router.get('/info', (req, res) => {
     const requestTime = new Date()
@@ -82,26 +102,6 @@ router.get('/info', (req, res) => {
       })
   })
   
-
-  router.delete('/persons/:id', (req, res) => {
-    const id = req.params.id
-  
-    if (!id) {
-      return res.status(400).json({ error: 'Invalid ID' })
-    }
-  
-    Person.findByIdAndRemove(id, (error, result) => {
-      if (error) {
-        console.error('Error deleting person:', error)
-        return res.status(500).json({ error: 'Internal Server Error' })
-      }
-  
-      if (!result) {
-        return res.status(404).json({ error: 'Person not found' })
-      }
-      res.status(204).end()
-    })
-  })
   
 
   router.post('/persons', async (req, res) => {
@@ -143,3 +143,5 @@ router.get('/info', (req, res) => {
   app.listen(port, '0.0.0.0', () => {
     console.log(`Server is listening on ${port}`)
   })
+
+  module.exports = router
