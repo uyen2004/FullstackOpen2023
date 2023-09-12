@@ -120,30 +120,31 @@ router.get('/info', (req, res) => {
     }
   })
 
-  router.put('/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const updatedPerson = req.body
-  
-    const personIndex = persons.findIndex((p) => p.id === id)
-  
-    if (personIndex === -1) {
-      return res.status(404).json({ error: 'Person not found' })
+  router.put('/persons/:id', async (req, res) => {
+    const id = req.params.id
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid ID format' })
     }
   
-    persons[personIndex] = {
-      ...persons[personIndex],
-      ...updatedPerson,
-    }
+    const { name, number } = req.body
   
-    res.json(persons[personIndex])
+    try {
+        const updatedPerson = await Person.findByIdAndUpdate(
+        id,
+        { name, number },
+        { new: true }
+      )
+      if (!updatedPerson) {
+        return res.status(404).json({ error: 'Person not found' })
+      }
+      res.json(updatedPerson)
+    } catch (error) {
+      console.error('Error updating person:', error)
+      res.status(500).json({ error: 'Internal Server Error' })
+    }
   })
-
-  const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' })
-  }
-   app.use(unknownEndpoint)
-
-   const errorHandler = (error, request, response, next) => {
+  
+  const errorHandler = (error, request, response, next) => {
     console.error(error.message)
     response.status(500).json({ error: 'Internal Server Error' })
     next(error)
