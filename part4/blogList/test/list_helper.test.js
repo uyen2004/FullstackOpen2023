@@ -24,3 +24,40 @@ describe('total likes', () => {
       expect(result).toBe(5)
     })
   })
+
+  describe('favorite blog', () => {
+    test('most likes blog', () => {
+        const blogs = [
+            {
+                title: 'The Fault in Our Stars',
+                author: 'John Green',
+                likes: 96,
+            },
+            {
+                title: 'letranger',
+                author: 'Albert Camus',
+                likes: 86,
+            },
+            { 
+                title: 'Alex',
+                author: 'Pierre Lemaitre',
+                likes: 84,
+            },
+            {     
+                title: 'A Tree Grows in Brooklyn',
+                author: 'Betty Smith',
+                likes: 85,
+      }
+    ]
+  
+    const result = listHelper.favoriteBlog(blogs)
+  
+    const expectedBlog = {
+        title: 'The Fault in Our Stars',
+        author: 'John Green',
+        likes: 96,
+    }
+    expect(result).toEqual(expectedBlog)
+  })
+})
+  
