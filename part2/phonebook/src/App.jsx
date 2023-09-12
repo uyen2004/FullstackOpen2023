@@ -10,6 +10,10 @@ import mongoose from 'mongoose'
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [noti, setNoti] = useState({ message: null, isError: false })
+  const [newName, setNewName] = useState('')
+  const [newPhone, setNewPhone] = useState('')
+  const [search, setSearch] = useState('')
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true)
 
   useEffect(() => {
     personService
@@ -23,10 +27,7 @@ const App = () => {
       })
   }, [])
 
-  const [newName, setNewName] = useState('')
-  const [newPhone, setNewPhone] = useState('')
-  const [search, setSearch] = useState('')
-  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true)
+  
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value)
