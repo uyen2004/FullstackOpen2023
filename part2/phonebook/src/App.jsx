@@ -5,6 +5,7 @@ import Filter from './components/Filter'
 import axios from 'axios'
 import personService from './services/Persons'
 import './index.css'
+import mongoose from 'mongoose'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -25,6 +26,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [search, setSearch] = useState('')
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true)
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value)
@@ -35,23 +37,26 @@ const App = () => {
   }
 
   const handlePhoneChange = (event) => {
-    setNewPhone(event.target.value)
+    const phoneNumber = event.target.value
+    setNewPhone(phoneNumber)
+    const phoneRegex = /^(?:\d{2,3}-\d+)$/
+    const isValidPhoneNumber = phoneRegex.test(phoneNumber)
+    setIsValidPhoneNumber(isValidPhoneNumber)
   }
+  
 
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = (id) => {
-    const personToDelete = persons.find(person => person.id === id)
+    const personToDelete = persons.find(person => person._id === id)
     if (!personToDelete) return
-
     setIsDeleting(true)
-
     const confirmDelete = window.confirm(`Delete ${personToDelete.name}?`)
     if (confirmDelete) {
       personService
         .deletePerson(id)
         .then(() => {
-          setPersons(persons.filter(person => person.id !== id))
+          setPersons(persons.filter(person => person._id !== id))
           setNoti({ message: `Deleted '${personToDelete.name}'`, isError: false })
           setTimeout(() => {
             setNoti({ message: null, isError: false })
@@ -64,16 +69,26 @@ const App = () => {
             setNoti({ message: null, isError: false })
           }, 5000)
         })
-        .finally(() => { 
-          setIsDeleting(false)
+        .finally(() => {
+          setIsDeleting(false);
         })
     }
   }
-
+  
+  
   const addPerson = (event) => {
     event.preventDefault()
-  
-    const existingPerson = persons.find((person) => person.name === newName)
+    
+    if(newName.length < 3){
+      setNoti({ message: `Person validation failed: name: Path ${newName} is shorter than the minimum allowed length(3)'`, isError: true })
+      return
+    }
+    if(!isValidPhoneNumber){
+      setNoti({message: `Please enter phone number in the format XX-XXXXXXX or XXX-XXXXXXXX`, isError : true})
+      return
+    }
+
+    const existingPerson = persons.find((person) => person.name.toLowerCase() === newName.toLowerCase())
   
     if (existingPerson && !isDeleting) {
       const confirmReplace = window.confirm(
@@ -84,13 +99,13 @@ const App = () => {
         const updatedPerson = { ...existingPerson, number: newPhone }
   
         personService
-          .update(existingPerson.id, updatedPerson)
+          .update(existingPerson._id, updatedPerson)
           .then((returnedPerson) => {
             setPersons(
               persons.map((person) =>
-                person.id === existingPerson.id ? returnedPerson : person
+                person.id === existingPerson._id ? returnedPerson : person
               )
-            );
+            )
             setNewName('')
             setNewPhone('')
             setNoti({ message: `Updated '${returnedPerson.name}'`, isError: false })
@@ -99,14 +114,14 @@ const App = () => {
             }, 5000)
           })
           .catch((error) => {
-            console.error('Cannot update person:', error);
+            console.error('Cannot update person:', error)
             setNoti({
               message: `'${existingPerson.name}' has already been removed from this server`,
               isError: true,
             })
             setTimeout(() => {
               setNoti({ message: null, isError: false })
-            }, 5000)
+            }, 5000);
           })
       }
     } else {
@@ -139,8 +154,6 @@ const App = () => {
     }
   }
   
-
-
   const filteredPersons = persons.filter((person) => {
     if (!search) {
       return true
