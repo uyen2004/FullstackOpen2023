@@ -75,9 +75,7 @@ router.delete('/persons/:id', async (req, res) => {
   }
 })
 
-
-
-router.get('/info', (req, res) => {
+app.get('/info', (req, res) => {
     const requestTime = new Date()
     const numberOfEntries = persons.length
     res.send(`
