@@ -37,5 +37,5 @@ if (process.argv.length === 3) {
     mongoose.connection.close()
   });
 } else {
-  mongoose.connection.close();
+  mongoose.connection.close()
 }
