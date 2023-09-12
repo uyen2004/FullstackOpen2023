@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const router = express.Router()
+const Person = require('./models/person')
 require('dotenv').config()
 
 app.use(express.json())
@@ -37,13 +38,6 @@ morgan.token('req-body', (req) => {
 app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :req-body')
 )
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-})
-
-const Person = mongoose.model('Person', personSchema)
 
 router.get('/persons', (req, res) => {
   Person.find({})
