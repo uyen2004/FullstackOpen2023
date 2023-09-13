@@ -30,7 +30,7 @@
     if (blogs.length === 0) {
       return null;
     }
-    const mostBlogsAuthor = _.maxBy(blogs, 'author')
+    const mostBlogsAuthor = _.maxBy(blogs, 'blogs')
     console.log(mostBlogsAuthor);
     return {
       author: mostBlogsAuthor.author,
@@ -42,7 +42,7 @@
     if (blogs.length === 0) {
       return null;
     }
-    const mostLikesAuthor = _.maxBy(blogs, 'author')
+    const mostLikesAuthor = _.maxBy(blogs, 'likes')
     console.log(mostLikesAuthor);
     return {
       author: mostLikesAuthor.author,

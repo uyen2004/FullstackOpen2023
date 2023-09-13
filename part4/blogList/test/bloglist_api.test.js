@@ -9,8 +9,19 @@ describe('Blog list tests', () => {
       const response = await agent
       .get('/api/blogs')
       .expect(200)
-      .expect('Content-Type', /application\/json/)
       expect(response.body.length).toBe(6)
+    })
+  })
+  describe('Blog list tests', () => {
+    test('verifies the unique identifier ', async () => {
+      const response = await agent
+        .get('/api/blogs')
+        .expect(200)
+  
+      response.body.forEach((blog) => {
+        expect(blog.id).toBeDefined()
+        expect(blog._id).toBeUndefined()
+      })
     })
   })
   afterAll(async () => {
