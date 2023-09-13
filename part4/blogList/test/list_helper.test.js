@@ -61,31 +61,48 @@ describe('total likes', () => {
   })
 })
 
+const authors = [
+  {
+    author: "Robert C. Martin",
+    blogs: 5,
+    likes: 15
+  },
+  {
+    author: "Stephen King",
+    blogs: 15,
+    likes: 65
+  },
+  { 
+    author: "Albert Camus",
+    blogs: 4,
+    likes: 10
+  },
+]
+
 describe('most blogs', () => {
   test('most blog', () => {
-    const blogs = [
-      {
-        author: "Robert C. Martin",
-        blogs: 15
-      },
-      {
-        author: "Stephen King",
-        blogs: 65
-      },
-      { 
-        author: "Albert Camus",
-        blogs: 10
-      },
-    ]
-    const result = listHelper.mostBlogs(blogs)
+    const result = listHelper.mostBlogs(authors)
 
     console.log(result)
 
     const expectedAuthor = {
       author: "Stephen King",
-      blogs: 65
+      blogs: 15
     }
 
     expect(result).toEqual(expectedAuthor)
+  })
+})
+
+describe('most likes', () =>{
+  test('author has most likes', () =>{
+
+    const result = listHelper.mostLikes(authors)
+    const expectedAuthor = {
+      author: "Stephen King",
+      likes: 65
+    }
+    expect(result).toEqual(expectedAuthor)
+
   })
 })

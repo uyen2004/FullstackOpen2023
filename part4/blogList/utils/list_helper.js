@@ -28,16 +28,32 @@
 
   const mostBlogs = (blogs) => {
     if (blogs.length === 0) {
-      return null
+      return null;
     }
-    const mostBlogsAuthor = _.maxBy(blogs, 'blogs')
-    return mostBlogsAuthor
+    const mostBlogsAuthor = _.maxBy(blogs, 'author')
+    console.log(mostBlogsAuthor);
+    return {
+      author: mostBlogsAuthor.author,
+      blogs: mostBlogsAuthor.blogs,
+    }
   }
   
+  const mostLikes = (blogs) => {
+    if (blogs.length === 0) {
+      return null;
+    }
+    const mostLikesAuthor = _.maxBy(blogs, 'author')
+    console.log(mostLikesAuthor);
+    return {
+      author: mostLikesAuthor.author,
+      likes: mostLikesAuthor.likes,
+    }
+  }
   
   module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
-    mostBlogs
+    mostBlogs,
+    mostLikes
   }
