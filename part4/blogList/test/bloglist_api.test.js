@@ -1,6 +1,7 @@
 const request = require('supertest')
 const app = require('../app')
 const mongoose = require('mongoose')
+const Blog = require('../models/blog')
 
 
 const agent = request(app)
@@ -24,6 +25,34 @@ describe('Blog list tests', () => {
       })
     })
   })
+
+  describe('Blog list tests', () => {
+    beforeEach(async () => {
+      await Blog.deleteMany({})
+    })
+  
+    test('POST /api/blogs test', async () => {
+      const newBlog = {
+        title: 'A little white lie',
+        author: 'Uyn',
+        url: 'https://epiphany.com',
+        likes: 10,
+      }
+  
+      const response = await agent
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+  
+      expect(response.body).toHaveProperty('id')
+      expect(response.body.title).toBe(newBlog.title)
+  
+      const blogs = await Blog.find({})
+      expect(blogs).toHaveLength(1)
+    })
+  })
+  
+
   afterAll(async () => {
     await mongoose.connection.close()
   })
