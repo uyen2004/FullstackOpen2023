@@ -59,6 +59,32 @@ describe('Blog list tests', () => {
       const savedBlog = blogs.find(blog => blog.id === response.body.id)
       expect(savedBlog.likes).toBe(0)
     })
+
+    test('POST /api/blogs missing "title"', async () => {
+      const newBlog = {
+        author: 'Uyn',
+        url: 'https://epiphany.com',
+        likes: 10,
+      };
+  
+      const response = await agent
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+    })
+    
+    test('POST /api/blogs missing "url"', async () => {
+      const newBlog = {
+        title: 'A little white lie',
+        author: 'Uyn',
+        likes: 10,
+      }
+    
+      await agent
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+    })
   })
   
   

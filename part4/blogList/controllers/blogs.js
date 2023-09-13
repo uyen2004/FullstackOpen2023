@@ -13,11 +13,27 @@ router.get('/', (request, response) => {
 })
 
 router.post('/', (request, response) => {
-  const blog = new Blog(request.body)
-  blog
+  const { title, author, url, likes } = request.body;
+
+  if (!title || !url) {
+    return response.status(400).json({ error: 'Missing tittle or URL' })
+  }
+
+  const newBlog = new Blog({
+    title,
+    author,
+    url,
+    likes: likes === undefined ? 0 : likes, 
+  })
+
+  newBlog
     .save()
-    .then(result => {
+    .then((result) => {
       response.status(201).json(result)
     })
+    .catch((error) => {
+      response.status(500).json({ error: 'Internal Server Error' })
+    })
 })
+
 module.exports = router
