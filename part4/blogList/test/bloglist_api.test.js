@@ -143,7 +143,50 @@ describe('Blog list tests', () => {
     
   })
 
+  describe('Blog list tests', () => {
+    let createdBlog
   
+    beforeAll(async () => {
+      const newBlog = new Blog({
+        title: 'tittle',
+        author: 'Author',
+        url: 'https://blog.com',
+        likes: 5,
+      })
+  
+      createdBlog = await newBlog.save()
+    })
+  
+    afterAll(async () => {
+      await Blog.findByIdAndRemove(createdBlog._id)
+      await mongoose.connection.close();
+    })
+  
+    test('PUT /api/blogs/:id updates', async () => {
+      const updatedLikes = 10
+  
+      const response = await agent
+        .put(`/api/blogs/${createdBlog._id}`)
+        .send({ likes: updatedLikes })
+        .expect(200)
+  
+      expect(response.body.likes).toBe(updatedLikes)
+  
+      const updatedBlog = await Blog.findById(createdBlog._id)
+      expect(updatedBlog.likes).toBe(updatedLikes);
+    })
+  
+    test('PUT /api/blogs/:id returns 404 for invalid ID', async () => {
+      const Id  = '9319ksaj911'
+  
+      const response = await agent
+        .put(`/api/blogs/${Id}`)
+        .send({ likes: 10 })
+        .expect(404)
+  
+      expect(response.status).toBe(404)
+    })
+  })
   
   afterAll(async () => {
     await mongoose.connection.close()
