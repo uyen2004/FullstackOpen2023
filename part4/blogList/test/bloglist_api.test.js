@@ -42,6 +42,7 @@ describe('Blog list tests', () => {
         title: 'A little white lie',
         author: 'Uyn',
         url: 'https://epiphany.com',
+        likes: 10
       }
   
       const response = await agent
@@ -57,7 +58,7 @@ describe('Blog list tests', () => {
       expect(blogs).toHaveLength(blogsLength + 1)
   
       const savedBlog = blogs.find(blog => blog.id === response.body.id)
-      expect(savedBlog.likes).toBe(0)
+      expect(savedBlog.likes).toBe(10)
     })
 
     test('POST /api/blogs missing "title"', async () => {
@@ -115,6 +116,34 @@ describe('Blog list tests', () => {
       expect(savedBlog.likes).toBe(0)
     })
   })
+
+  describe('Blog list tests', () => {  
+    test('DELETE /api/blogs/:id deletes a single blog post', async () => {
+      const newBlog = {
+        title: 'A little white lie',
+        author: 'Uyn',
+        url: 'https://epiphany.com',
+        likes: 10
+      }
+    
+      const createResponse = await agent
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+    
+      const createdBlogId = createResponse.body.id
+    
+      const deleteResponse = await agent
+        .delete(`/api/blogs/${createdBlogId}`)
+        .expect(204)
+    
+      const deletedBlog = await Blog.findById(createdBlogId)
+      expect(deletedBlog).toBeNull()
+    })
+    
+  })
+
+  
   
   afterAll(async () => {
     await mongoose.connection.close()

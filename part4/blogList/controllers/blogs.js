@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 require('dotenv').config()
 const Blog = require('../models/blog')
+const mongoose = require('mongoose')
 
 router.use(express.json())
 router.get('/', (request, response) => {
@@ -33,6 +34,24 @@ router.post('/', (request, response) => {
     })
     .catch((error) => {
       response.status(500).json({ error: 'Internal Server Error' })
+    })
+
+    router.delete('/:id', async (req, res) => {
+      const id = req.params.id
+    
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' })
+      }
+    
+      try {
+        const removedBlog= await Blog.findByIdAndRemove(id)
+        if (!removedBlog) {
+          return res.status(404).json({ error: 'Blog not found' })
+        }
+        res.status(204).end()
+      } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' })
+      }
     })
 })
 
