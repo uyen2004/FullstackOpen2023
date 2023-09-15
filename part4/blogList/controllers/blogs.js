@@ -5,6 +5,7 @@ const Blog = require('../models/blog')
 const mongoose = require('mongoose')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const tokenExtractor = require('../middleware/tokenExtractor')
 
 router.use(express.json())
 router.get('/', async (req, res) => {
@@ -61,23 +62,38 @@ router.post('/', async (request, response) => {
 
 
 
-    router.delete('/:id', async (req, res) => {
-      const id = req.params.id
-    
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'Invalid ID format' })
-      }
-    
-      try {
-        const removedBlog= await Blog.findByIdAndRemove(id)
-        if (!removedBlog) {
-          return res.status(404).json({ error: 'Blog not found' })
-        }
-        res.status(204).end()
-      } catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' })
-      }
-    })
+router.delete('/:id', tokenExtractor, async (request, response) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'Token invalid or missing' })
+  }
+
+  const blogToDelete = await Blog.findById(request.params.id)
+
+  if (!blogToDelete) {
+    return response.status(404).json({ error: 'Blog not found' })
+  }
+
+  if (blogToDelete.user.toString() !== decodedToken.id) {
+    return response.status(403).json({ error: 'You cannot delete this blog' })
+  }
+
+  try {
+    const user = await User.findById(decodedToken.id)
+    console.log('User:', user)
+    console.log('User.blogs:', user.blogs)
+
+    user.blogs = user.blogs || []
+    user.blogs = user.blogs.filter(blog => blog.toString() !== request.params.id)
+    await user.save()
+    response.status(204).end()
+  } catch (error) {
+    console.error('Error:', error)
+    response.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
 
 router.put('/:id', async (req, res) => {
   const id = req.params.id
