@@ -32,7 +32,7 @@ router.post('/', async (request, response) => {
     return response.status(401).json({ error: 'Token missing' })
   }
   try {
-    const decodedToken = jwt.verify(token, process.env.SECRET)
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
     if (!decodedToken.id) {
       return response.status(401).json({ error: 'Token invalid' })
     }

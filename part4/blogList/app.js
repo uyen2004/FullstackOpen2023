@@ -9,6 +9,8 @@ const Blog = require('./models/blog')
 const userRouter = require('./controllers/users')
 const bodyParser = require('body-parser')
 const loginRouter=require('./controllers/login')
+const tokenExtractor = require('./middleware/tokenExtractor')
+app.use(tokenExtractor)
 app.use(bodyParser.json())
 app.use(express.json())
 
