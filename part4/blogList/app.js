@@ -8,8 +8,9 @@ const mongoose = require('mongoose')
 const Blog = require('./models/blog')
 const userRouter = require('./controllers/users')
 const bodyParser = require('body-parser')
+const loginRouter=require('./controllers/login')
 app.use(bodyParser.json())
-
+app.use(express.json())
 
 mongoose.connect(config.mongoUrl)
   .then(() => {
@@ -22,6 +23,7 @@ mongoose.connect(config.mongoUrl)
 
 app.use('/api/blogs', router)
 app.use('/api/users', userRouter)
+app.use('/api/login', loginRouter)
 app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())

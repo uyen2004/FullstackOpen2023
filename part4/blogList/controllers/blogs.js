@@ -3,6 +3,7 @@ const router = express.Router()
 require('dotenv').config()
 const Blog = require('../models/blog')
 const mongoose = require('mongoose')
+const User = require('../models/user')
 
 router.use(express.json())
 router.get('/', async (req, res) => {
@@ -17,8 +18,8 @@ router.post('/', async (request, response) => {
   if (!title || !url) {
     return response.status(400).json({ error: 'Missing tittle or URL' })
   }
-  const user = await User.findById(body.userId)
-  const newBlog = new Blog({
+  const user = await User.findById(request.body.userId)
+   const newBlog = new Blog({
     title,
     author,
     url,

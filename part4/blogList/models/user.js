@@ -9,18 +9,11 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.toJSON = function () {
   const user = this.toObject()
-  user._id
+  user._id = user._id
   delete user.__v
   delete user.passwordHash
   return user
 }
-
-userSchema.pre('save', async function (next) {
-  if (this.isModified('passwordHash')) {
-    this.passwordHash = await bcrypt.hash(this.passwordHash, 10)
-  }
-  next()
-})
 
 const User = mongoose.model('User', userSchema)
 module.exports = User
