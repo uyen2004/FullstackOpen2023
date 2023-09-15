@@ -4,6 +4,7 @@ require('dotenv').config()
 const Blog = require('../models/blog')
 const mongoose = require('mongoose')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 router.use(express.json())
 router.get('/', async (req, res) => {
@@ -12,32 +13,52 @@ router.get('/', async (req, res) => {
   res.json(blogs)
 })
 
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
+
 router.post('/', async (request, response) => {
   const { title, author, url, likes } = request.body
 
   if (!title || !url) {
-    return response.status(400).json({ error: 'Missing tittle or URL' })
+    return response.status(400).json({ error: 'Missing title or URL' })
   }
-  const user = await User.findById(request.body.userId)
-   const newBlog = new Blog({
-    title,
-    author,
-    url,
-    likes: likes === undefined ? 0 : likes, 
-    user: user._id
-  })
+  const token = getTokenFrom(request)
+  if (!token) {
+    return response.status(401).json({ error: 'Token missing' })
+  }
+  try {
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'Token invalid' })
+    }
+    const user = await User.findById(decodedToken.id)
+    if (!user.blogs) {
+      user.blogs = []
+    }
+    const newBlog = new Blog({
+      title,
+      author,
+      url,
+      likes: likes === undefined ? 0 : likes,
+      user: user._id,
+    })
 
-  newBlog
-    .save()
-    .then((result) => {
-      response.status(201).json(result)
-    })
-    .catch((error) => {
-      response.status(500).json({ error: 'Internal Server Error' })
-    })
+    const savedBlog = await newBlog.save()
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
-  })
+
+    response.status(201).json(savedBlog)
+  } catch (error) {
+    console.error('Error:', error)
+    response.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
 
 
     router.delete('/:id', async (req, res) => {

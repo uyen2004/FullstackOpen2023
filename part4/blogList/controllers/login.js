@@ -10,8 +10,6 @@ loginRouter.post('/', async (request, response) => {
     ? false
     : await bcrypt.compare(password, user.passwordHash)
     console.log('Password from Request:', password)
-    console.log('Password Hash from User:', user.passwordHash)
-
     console.log('User:', user)
   console.log('Password Correct:', passwordCorrect)
 
