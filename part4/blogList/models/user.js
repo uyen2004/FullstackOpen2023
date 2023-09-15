@@ -5,6 +5,12 @@ const userSchema = new mongoose.Schema({
   username: String,
   passwordHash: String,
   name: String,
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Blog',
+    }
+  ]
 })
 
 userSchema.methods.toJSON = function () {
@@ -13,6 +19,7 @@ userSchema.methods.toJSON = function () {
   delete user.__v
   delete user.passwordHash
   return user
+
 }
 
 const User = mongoose.model('User', userSchema)
