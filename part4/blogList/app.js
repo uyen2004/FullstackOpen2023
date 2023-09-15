@@ -7,6 +7,9 @@ const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 const Blog = require('./models/blog')
 const userRouter = require('./controllers/users')
+const bodyParser = require('body-parser')
+app.use(bodyParser.json())
+
 
 mongoose.connect(config.mongoUrl)
   .then(() => {
