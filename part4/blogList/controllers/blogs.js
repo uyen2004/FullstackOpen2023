@@ -5,26 +5,25 @@ const Blog = require('../models/blog')
 const mongoose = require('mongoose')
 
 router.use(express.json())
-router.get('/', (request, response) => {
-  Blog
-    .find({})
-    .then(blogs => {
-      response.json(blogs)
-    })
+router.get('/', async (req, res) => {
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+
+  res.json(blogs)
 })
 
-router.post('/', (request, response) => {
+router.post('/', async (request, response) => {
   const { title, author, url, likes } = request.body
 
   if (!title || !url) {
     return response.status(400).json({ error: 'Missing tittle or URL' })
   }
-
+  const user = await User.findById(body.userId)
   const newBlog = new Blog({
     title,
     author,
     url,
     likes: likes === undefined ? 0 : likes, 
+    user: user._id
   })
 
   newBlog
@@ -35,6 +34,10 @@ router.post('/', (request, response) => {
     .catch((error) => {
       response.status(500).json({ error: 'Internal Server Error' })
     })
+    user.blogs = user.blogs.concat(savedBlog._id)
+    await user.save()
+  })
+
 
     router.delete('/:id', async (req, res) => {
       const id = req.params.id
@@ -53,7 +56,6 @@ router.post('/', (request, response) => {
         res.status(500).json({ error: 'Internal Server Error' })
       }
     })
-})
 
 router.put('/:id', async (req, res) => {
   const id = req.params.id
