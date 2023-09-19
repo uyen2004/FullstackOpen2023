@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import blogService from '../services/blogs';
+import React, { useEffect, useState } from 'react'
+import blogService from '../services/blogs'
 
-const Welcome = ({ user, loginForm }) => {
-  const [userBlogs, setUserBlogs] = useState([]);
+const Welcome = ({ user, loginForm, setUser}) => {
+  const [userBlogs, setUserBlogs] = useState([])
 
   useEffect(() => {
     if (user) {
@@ -10,9 +10,14 @@ const Welcome = ({ user, loginForm }) => {
       blogService.getBlogsByUserId(user.id).then((filteredBlogs) => {
         console.log('Filtered Blogs:', filteredBlogs)
         setUserBlogs(filteredBlogs)
-      });
+      })
     }
   }, [user]);
+
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedBlogUser')
+    setUser(null)
+  }
 
   return (
     <div>
@@ -22,6 +27,7 @@ const Welcome = ({ user, loginForm }) => {
       ) : (
         <div>
           <p>{user.username} logged in</p>
+          <button onClick={handleLogout}>Logout</button>
           {userBlogs.length > 0 ? (
             <ul>
               {userBlogs.map((blog) => (
@@ -36,7 +42,7 @@ const Welcome = ({ user, loginForm }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Welcome;
+export default Welcome

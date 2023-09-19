@@ -18,6 +18,10 @@ const App = () => {
         username,
         password,
       })
+      const storedUser = localStorage.getItem('loggedBlogUser')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
       setUser(user)
       setUsername('')
       setPassword('')
@@ -28,6 +32,8 @@ const App = () => {
       }, 5000)
     }
   }
+
+  
 
   const loginForm = () => (
     
@@ -60,7 +66,7 @@ const App = () => {
       {user === null ? (
         loginForm()
       ) : (
-        <Welcome user={user} loginForm={loginForm} />
+        <Welcome user={user} loginForm={loginForm} setUser={setUser} />
       )}
     </div>
   );
