@@ -3,6 +3,7 @@ import loginService from './services/login'
 import blogService from './services/blogs'
 import Welcome from './components/Welcome'
 import BlogForm from './components/BlogForm'
+import './index.css'
 
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
@@ -10,7 +11,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [blogs, setBlogs] = useState([])
- 
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -21,11 +21,11 @@ const App = () => {
       })
       const storedUser = localStorage.getItem('loggedBlogUser')
       console.log(user.token)
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-      localStorage.setItem('loggedBlogUser', JSON.stringify(user))
-    }
-    blogService.setToken(user.token)
+      if (storedUser) {
+        setUser(JSON.parse(storedUser))
+        localStorage.setItem('loggedBlogUser', JSON.stringify(user))
+      }
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -37,40 +37,31 @@ const App = () => {
     }
   }
 
-  const addBlog = async (newBlog) => {
-    try {
-      const createdBlog = await blogService.create(newBlog)
-      setBlogs([...blogs, createdBlog])
-    } catch (error) {
-      console.error('Error creating blog:', error)
-    }
-  }
-  
-
   const loginForm = () => (
-    
-    <form onSubmit={handleLogin}>
-      <h1>Login</h1>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
+    <div>
+      <form onSubmit={handleLogin}>
+        <h1>Login</h1>
+        <div>
+          username
+          <input
+            type="text"
+            value={username}
+            name="Username"
+            onChange={({ target }) => setUsername(target.value)}
+          />
+        </div>
+        <div>
+          password
+          <input
+            type="password"
+            value={password}
+            name="Password"
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </div>
+        <button type="submit">login</button>
+      </form>
+    </div>
   )
 
   return (
@@ -79,9 +70,8 @@ const App = () => {
         loginForm()
       ) : (
         <>
-          
-          <Welcome user={user} loginForm={loginForm} setUser={setUser} />
-          <BlogForm addBlog={addBlog} />
+          <Welcome user={user} loginForm={loginForm} setUser={setUser} blogs={blogs} />
+          <BlogForm setBlogs={setBlogs} />
         </>
       )}
     </div>

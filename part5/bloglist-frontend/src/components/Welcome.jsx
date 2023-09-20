@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import blogService from '../services/blogs'
 
 const Welcome = ({ user, loginForm, setUser}) => {
@@ -12,7 +12,7 @@ const Welcome = ({ user, loginForm, setUser}) => {
         setUserBlogs(filteredBlogs)
       })
     }
-  }, [user]);
+  }, [user])
 
   const handleLogout = () => {
     localStorage.removeItem('loggedBlogUser')

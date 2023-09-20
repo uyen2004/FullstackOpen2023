@@ -10,7 +10,7 @@ const login = async (credentials) => {
     
   } catch (error) {
   }
-};
+}
 
 
 
