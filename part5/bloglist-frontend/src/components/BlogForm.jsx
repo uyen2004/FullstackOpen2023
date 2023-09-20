@@ -27,7 +27,7 @@ const BlogForm = ({ setBlogs }) => {
         title: '',
         author: '',
         url: '',
-      });
+      })
       setBlogs((prevBlogs) => [...prevBlogs, createdBlog])
       setFormVisible(false)
     } catch (error) {
