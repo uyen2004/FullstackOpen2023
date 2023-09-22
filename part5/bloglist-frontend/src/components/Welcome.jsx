@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import blogService from '../services/blogs'
+import Blog from './Blog'
 
 const Welcome = ({ user, loginForm, setUser}) => {
   const [userBlogs, setUserBlogs] = useState([])
@@ -31,9 +32,9 @@ const Welcome = ({ user, loginForm, setUser}) => {
           {userBlogs.length > 0 ? (
             <ul>
               {userBlogs.map((blog) => (
-                <li key={blog.id}>
-                    {blog.title} {blog.author}
-                </li>
+              <div key={blog.id}>
+                <Blog blog={blog} />
+              </div>
               ))}
             </ul>
           ) : (
