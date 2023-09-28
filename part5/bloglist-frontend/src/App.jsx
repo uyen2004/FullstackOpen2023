@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import loginService from './services/login';
 import blogService from './services/blogs';
 import Welcome from './components/Welcome';
@@ -6,14 +6,13 @@ import BlogForm from './components/BlogForm';
 import './index.css';
 
 const App = () => {
-  const [errorMessage, setErrorMessage] = useState(null);
   const [noti, setNoti] = useState({ message: null, isError: false });
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [blogs, setBlogs] = useState([]);
   const [userBlogs, setUserBlogs] = useState([])
-
+  const [errorMessage, setErrorMessage ] = useState([])
   useEffect(() => {
     if (user) {
       console.log('User:', user.id);

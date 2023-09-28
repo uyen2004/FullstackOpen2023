@@ -27,25 +27,19 @@ const create = async newBlog => {
 };
 
 const update = async (blogId, updatedBlogData) => {
-  try {
+  
     const response = await axios.put(`${baseUrl}/${blogId}`, updatedBlogData);
     return response.data;
-  } catch (error) {
-    throw error;
-  }
+  
 };
 
 const remove = async blogId => {
   const config = {
     headers: { Authorization: token },
   };
-
-  try {
     const response = await axios.delete(`${baseUrl}/${blogId}`, config);
     return response.data;
-  } catch (error) {
-    throw error;
-  }
+ 
 };
 
 

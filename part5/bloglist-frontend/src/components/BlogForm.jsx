@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import Blog from './Blog';
+import  { useState } from 'react';
 
 const BlogForm = ({ addBlog, setBlogs }) => {
   const [newBlog, setNewBlog] = useState({
@@ -8,7 +7,7 @@ const BlogForm = ({ addBlog, setBlogs }) => {
     url: '',
   });
 
-  const [notification, setNotification] = useState(null);
+  const [notication, setNotification] = useState(null);
   const [formVisible, setFormVisible] = useState(false);
 
   const handleInputChange = (event) => {

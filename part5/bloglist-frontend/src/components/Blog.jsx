@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import blogService from '../services/blogs';
+import  { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const Blog = ({ blog, handleLikeClick, handleDeleteClick, user }) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -24,6 +24,14 @@ const Blog = ({ blog, handleLikeClick, handleDeleteClick, user }) => {
       handleDeleteClick(blog);
   };
 
+  Blog.propTypes = {
+    blog: PropTypes.object.isRequired,
+    handleLikeClick: PropTypes.func.isRequired,
+    handleDeleteClick: PropTypes.func.isRequired,
+    likes: PropTypes.number.isRequired,
+  };
+
+
   return (
     <div style={blogStyle}>
       <div>
@@ -31,7 +39,7 @@ const Blog = ({ blog, handleLikeClick, handleDeleteClick, user }) => {
         <button onClick={toggleDetails}>
           {showDetails ? 'Hide' : 'View'} Details
         </button>
-        <button onClick={handleLike}>Like</button>
+        
         {user && user.username === blog.user.username && (
           <button onClick={handleDelete}>Delete</button>
         )}
@@ -41,6 +49,7 @@ const Blog = ({ blog, handleLikeClick, handleDeleteClick, user }) => {
           <div>{blog.url}</div>
           <div>
             Likes: {blog.likes}
+            <button onClick={handleLike}>Like</button>
           </div>
           <div>{blog.user.name}</div>
         </div>

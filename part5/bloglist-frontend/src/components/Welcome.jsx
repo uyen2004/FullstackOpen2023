@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import blogService from '../services/blogs';
 import Blog from './Blog';
 
@@ -54,8 +54,6 @@ const Welcome = ({ user, loginForm, setUser }) => {
       console.error('Error deleting blog:', error);
     }
   };
-
-  
 
   return (
     <div>
