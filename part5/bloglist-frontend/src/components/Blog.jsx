@@ -17,7 +17,7 @@ const Blog = ({ blog, handleLikeClick, handleDeleteClick, user }) => {
   };
 
   const handleLike = () => {
-    handleLikeClick(blog);
+    handleLikeClick({ ...blog, likes: blog.likes + 1 });
   };
 
   const handleDelete = () => {
@@ -37,7 +37,7 @@ const Blog = ({ blog, handleLikeClick, handleDeleteClick, user }) => {
     <div style={blogStyle}>
       <div>
         {blog.title} {blog.author}
-        <button onClick={toggleDetails}>
+        <button onClick={toggleDetails} data-testid={`toggle-details-${blog.id}`}>
           {showDetails ? 'Hide' : 'View'} Details
         </button>
         
@@ -50,9 +50,11 @@ const Blog = ({ blog, handleLikeClick, handleDeleteClick, user }) => {
           <div>{blog.url}</div>
           <div>
             Likes: {blog.likes}
-            <button onClick={handleLike}>Like</button>
+            <button data-testid={`like-button-${blog.id}`} onClick={handleLike}>Like</button>
           </div>
-          <div>{blog.user.name}</div>
+          {blog.user && (
+            <div>{blog.user.name}</div>
+          )}  
         </div>
       )}
     </div>
