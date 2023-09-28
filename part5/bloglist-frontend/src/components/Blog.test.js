@@ -24,7 +24,7 @@ describe('Blog Component', () => {
     expect(element).toBeDefined()
   });
 
-  test('renders URL and likes after clicking "View Details"', () => {
+test('renders URL and likes after clicking "View Details"', () => {
     const button = component.getByText('View Details');
     fireEvent.click(button);
     
@@ -32,3 +32,9 @@ describe('Blog Component', () => {
     expect(component.container.querySelector('.likes')).toBeDefined();
   });
 });
+
+
+
+
+
+
