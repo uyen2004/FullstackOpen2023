@@ -58,6 +58,7 @@ const App = () => {
       console.log('Adding a new blog...');
       const createdBlog = await blogService.create(newBlog);
       setBlogs([...blogs, createdBlog]); 
+      setUserBlogs([...userBlogs, createdBlog]);
       setNoti({
         message: `A new blog '${createdBlog.title}' by '${createdBlog.author}' is added`,
         isError: false,

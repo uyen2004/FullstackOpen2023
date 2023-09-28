@@ -26,4 +26,13 @@ const create = async newBlog => {
   return response.data
 }
 
-export default { getAll, getBlogsByUserId, create, setToken }
+const update = async (blogId, updatedBlogData) => {
+  try {
+    const response = await axios.put(`${baseUrl}/${blogId}`, updatedBlogData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export default { getAll, getBlogsByUserId, create, setToken, update }
