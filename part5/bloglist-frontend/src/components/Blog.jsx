@@ -33,6 +33,7 @@ const Blog = ({ blog, handleLikeClick, handleDeleteClick, user }) => {
 
 
   return (
+    <div className="blog">
     <div style={blogStyle}>
       <div>
         {blog.title} {blog.author}
@@ -54,6 +55,7 @@ const Blog = ({ blog, handleLikeClick, handleDeleteClick, user }) => {
           <div>{blog.user.name}</div>
         </div>
       )}
+    </div>
     </div>
   );
 };
