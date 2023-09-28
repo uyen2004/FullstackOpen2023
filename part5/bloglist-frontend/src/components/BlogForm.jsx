@@ -29,6 +29,8 @@ const BlogForm = ({ addBlog, setBlogs }) => {
           author: '',
           url: '',
         });
+        setBlogs((prevBlogs) => [...prevBlogs, createdBlog]);
+  
         setNotification(`A new blog '${createdBlog.title}' by '${createdBlog.author}' is added`);
         setTimeout(() => {
           setNotification(null);

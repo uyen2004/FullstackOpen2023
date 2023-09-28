@@ -9,8 +9,8 @@ const Welcome = ({ user, loginForm, setUser}) => {
     if (user) {
       console.log('User:', user.id)
       blogService.getBlogsByUserId(user.id).then((filteredBlogs) => {
-        console.log('Filtered Blogs:', filteredBlogs)
-        setUserBlogs(filteredBlogs)
+      //console.log('Filtered Blogs:', filteredBlogs)
+      setUserBlogs(filteredBlogs)
       })
     }
   }, [user])
@@ -33,9 +33,9 @@ const Welcome = ({ user, loginForm, setUser}) => {
             <ul>
               {userBlogs.map((blog) => (
               <div key={blog.id}>
-                <Blog blog={blog} />
+              <Blog blog={blog} />
               </div>
-              ))}
+          ))}
             </ul>
           ) : (
             <p>No blogs found.</p>
