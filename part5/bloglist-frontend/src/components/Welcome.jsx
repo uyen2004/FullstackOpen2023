@@ -44,6 +44,18 @@ const Welcome = ({ user, loginForm, setUser }) => {
     }
   };
   
+  const handleDeleteClick = async (blogToDelete) => {
+    try {
+      if (window.confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}?`)) {
+        await blogService.remove(blogToDelete.id);
+        setUserBlogs(userBlogs.filter((blog) => blog.id !== blogToDelete.id));
+      }
+    } catch (error) {
+      console.error('Error deleting blog:', error);
+    }
+  };
+
+  
 
   return (
     <div>
@@ -62,7 +74,9 @@ const Welcome = ({ user, loginForm, setUser }) => {
                     key={blog.id}
                     blog={blog}
                     handleLikeClick={handleLikeClick}
+                    handleDeleteClick={handleDeleteClick}
                     likes={likes[blog.id] || blog.likes} 
+                    user={user}
                   />
                 </div>
               ))}
