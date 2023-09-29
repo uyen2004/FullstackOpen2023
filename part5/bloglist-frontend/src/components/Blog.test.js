@@ -2,6 +2,8 @@ import React from 'react';
 import { render, fireEvent, screen  } from '@testing-library/react';
 import Blog from './Blog';
 import '@testing-library/jest-dom'
+import BlogForm from './BlogForm';
+import userEvent from '@testing-library/user-event';
 
 describe('Blog Component', () => {
   let component;
@@ -66,8 +68,30 @@ test('renders URL and likes after clicking "View Details"', () => {
   
 });
 
+test('calls the event handler with the right details when a new blog is created', async () => {
+  const addBlogMock = jest.fn();
+  const { getByText, getByLabelText, getByTestId } = render(<BlogForm addBlog={addBlogMock} />);
+
+  const toggleButton = getByText('Create New Blog');
+  fireEvent.click(toggleButton);
+
+  const titleInput = getByTestId('title-input');
+  const authorInput = getByTestId('author-input');
+  const urlInput = getByTestId('url-input');
+  const createButton = getByText('Create');
+
+  userEvent.type(titleInput, 'test title');
+  userEvent.type(authorInput, 'test author');
+  userEvent.type(urlInput, 'https://example.com');
 
 
+  fireEvent.submit(createButton); 
+  console.log("test here",addBlogMock.mock.calls[0][0])
 
-
-
+  expect(addBlogMock).toHaveBeenCalledTimes(1);
+  expect(addBlogMock).toHaveBeenCalledWith({
+    title: 'test title',
+    author: 'test author',
+    url: 'https://example.com',
+  });
+});

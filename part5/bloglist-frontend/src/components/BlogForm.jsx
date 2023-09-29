@@ -29,7 +29,7 @@ const BlogForm = ({ addBlog, setBlogs }) => {
           url: '',
         });
         setBlogs((prevBlogs) => [...prevBlogs, createdBlog]);
-  
+        console.log("Calling addBlog with argument:", newBlog);
         setNotification(`A new blog '${createdBlog.title}' by '${createdBlog.author}' is added`);
         setTimeout(() => {
           setNotification(null);
@@ -57,35 +57,43 @@ const BlogForm = ({ addBlog, setBlogs }) => {
       </button>
       {formVisible && (
         <form onSubmit={handleSubmit}>
-          <div>
-            Title:
-            <input
-              type="text"
-              name="title"
-              value={newBlog.title}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div>
-            Author:
-            <input
-              type="text"
-              name="author"
-              value={newBlog.author}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div>
-            URL:
-            <input
-              type="text"
-              name="url"
-              value={newBlog.url}
-              onChange={handleInputChange}
-            />
-          </div>
-          <button type="submit">Create</button>
-        </form>
+        <div>
+        <label htmlFor="title-input">Title:</label>
+        <input
+          type="text"
+          name="title"
+          value={newBlog.title}
+          onChange={handleInputChange}
+          id="title-input"
+          data-testid="title-input"
+        />
+        </div>
+        <div>
+          <label htmlFor="author">Author:</label>
+          <input
+            type="text"
+            id="author"
+            name="author"
+            value={newBlog.author}
+            onChange={handleInputChange}
+            data-testid="author-input"
+          />
+        </div>
+        <div>
+          <label htmlFor="url">URL:</label>
+          <input
+            type="text"
+            id="url"
+            name="url"
+            value={newBlog.url}
+            onChange={handleInputChange}
+            data-testid="url-input"
+          />
+        </div>
+        <button type="submit">Create</button>
+      </form>
+      
+         
       )}
       
      
