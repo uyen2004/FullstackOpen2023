@@ -28,7 +28,7 @@ describe('Blog app', function () {
       cy.contains('Logout');
     });
 
-    it('fails with wrong credentials', function () {
+   it('fails with wrong credentials', function () {
       cy.get('input[name="Username"]').type('incorrectusername');
       cy.get('input[name="Password"]').type('incorrectpassword');
       cy.get('button[type="submit"]').click();
@@ -85,6 +85,16 @@ describe('Blog app', function () {
     });
   
     it('User can like a blog', function () {
+      cy.contains('Create New Blog').click();
+      cy.get('input[name="title"]').type('Test Blog');
+      cy.get('input[name="author"]').type('John Doe');
+      cy.get('input[name="url"]').type('https://example.com/test-blog');
+      cy.get('button[type="submit"]').click();
+  
+      cy.wait(2000);
+  
+      cy.contains('Blogs').click();
+      cy.get('.blog').should('exist');
       cy.get('.blog').contains('Like').click();
       cy.get('.blog').contains('Likes: 1');
     });
