@@ -8,7 +8,7 @@ const AnecdoteForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const content = e.target.anecdote.value;
-    dispatch(addAnecdote(content));
+    dispatch(addAnecdote({ content, votes: 0 })); 
     e.target.anecdote.value = '';
   };
 

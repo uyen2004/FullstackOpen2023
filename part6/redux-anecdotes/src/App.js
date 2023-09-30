@@ -1,7 +1,6 @@
 import AnecdoteForm from './components/AnecdoteForm'
 import AnecdoteList from './components/AnecdoteList'
-import Filter from './components/Filter'
-
+import store from './store';
 const App = () => {
   return (
     <div>
@@ -11,5 +10,6 @@ const App = () => {
     </div>
   )
 }
+
 
 export default App
