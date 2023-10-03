@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import anecdoteReducer from './reducers/anecdoteReducer';
 import filterReducer from './reducers/filterReducer';
 import notificationReducer from './reducers/notificationReducer';
+import thunk from 'redux-thunk';
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     notification: notificationReducer,
   },
   devTools: true,
+  middleware: [thunk],
 });
 
 export default store;
