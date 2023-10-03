@@ -1,10 +1,12 @@
 import React from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import AnecdoteForm from './components/AnecdoteForm';
 import Notification from './components/Notification';
-import { getAnecdotes } from './request';
+import { getAnecdotes, voteAnecdote  } from './request';
 
 const App = () => {
+  const queryClient = useQueryClient();
+
   const result = useQuery({
     queryKey: ['anecdotes'],
     queryFn: () => getAnecdotes(),
@@ -23,11 +25,22 @@ const App = () => {
 
   const { data } = result;
 
-  const handleVote = (anecdote) => {
-    console.log('vote');
+
+  const handleVote = async (anecdote) => {
+    try {
+      const updatedAnecdote = await voteAnecdote(anecdote.id);
+      
+      queryClient.setQueryData(['anecdotes'], (oldData) => {
+        return oldData.map((a) =>
+          a.id === updatedAnecdote.id ? updatedAnecdote : a
+        );
+      });
+    } catch (error) {
+      console.error('Error voting for anecdote:', error);
+    }
   };
-
-
+  
+  
   return (
     <div>
       <h3>Anecdote app</h3>
