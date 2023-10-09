@@ -1,17 +1,29 @@
 import React from 'react';
-import { useMutation, useQueryClient } from 'react-query'; 
+import { useMutation, useQueryClient } from 'react-query';
 import { createAnecdote } from '../request';
+import { useNotification } from '../NotificationContext';
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient();
+  const { dispatch: dispatchNotification } = useNotification();
 
   const newAnecdoteMutation = useMutation(createAnecdote, {
+    onError: (error) => {
+      dispatchNotification({ type: 'setNotification', payload: error.message });
+      setTimeout(() => {
+        dispatchNotification({ type: 'removeNotification' });
+      }, 5000);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries('anecdotes');
+      dispatchNotification({ type: 'setNotification', payload: 'New anecdote created!' });
+      setTimeout(() => {
+        dispatchNotification({ type: 'removeNotification' });
+      }, 5000);
     },
   });
 
-  const handleCreateAnecdote = async (event) => { 
+  const handleCreateAnecdote = async (event) => {
     event.preventDefault();
     const content = event.target.anecdote.value;
 
@@ -19,7 +31,7 @@ const AnecdoteForm = () => {
       newAnecdoteMutation.mutate({ content });
       event.target.anecdote.value = '';
     } else {
-      console.log("The content of the anecdote is less than 5 characters");
+      dispatchNotification({ type: 'setNotification', payload: 'Anecdote content must be at least 5 characters long.' });
     }
   };
 
