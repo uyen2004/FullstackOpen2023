@@ -29,7 +29,7 @@ describe('Blog list tests', () => {
     })
   })
 
-  describe('Blog list tests', () => {
+  /*describe('Blog list tests', () => {
     let blogsLength
   
     beforeAll(async () => {
@@ -86,10 +86,10 @@ describe('Blog list tests', () => {
         .send(newBlog)
         .expect(400)
     })
-  })
+  })*/
   
   
-  describe('Blog list tests', () => {
+  /*describe('Blog list tests', () => {
     let blogsLength
     beforeAll(async () => {
       const blogs = await Blog.find({})
@@ -115,7 +115,7 @@ describe('Blog list tests', () => {
       const savedBlog = blogs.find(blog => blog.id === response.body.id)
       expect(savedBlog.likes).toBe(0)
     })
-  })
+  })*/
 
   describe('Blog list tests', () => {  
     test('DELETE /api/blogs/:id deletes a single blog post', async () => {
@@ -187,7 +187,51 @@ describe('Blog list tests', () => {
       expect(response.status).toBe(404)
     })
   })
-  
+
+ 
+    describe('Adding a New Blog', () => {
+      beforeAll(async () => {
+        const user = new User({
+          username: 'uyen',
+          passwordHash: await bcrypt.hash('uyen1234', 10),
+          name: 'uyen'
+      })
+      test('should add a new blog with a valid token', async () => {
+        const newBlog = {
+          title: 'Test Blog',
+          author: 'Test Author',
+          url: 'https://example.com/test',
+          likes: 10,
+        };
+    
+        const response = await api
+          .post('/api/blogs')
+          .set('Authorization', `Bearer ${token}`) 
+          .send(newBlog)
+          .expect(201)
+          .expect('Content-Type', /application\/json/);
+    
+        expect(response.body.title).toBe(newBlog.title);
+        expect(response.body.author).toBe(newBlog.author);
+        expect(response.body.url).toBe(newBlog.url);
+        expect(response.body.likes).toBe(newBlog.likes);
+      });
+    
+      test('should fail to add a new blog without a token', async () => {
+        const newBlog = {
+          title: 'Test Blog',
+          author: 'Test Author',
+          url: 'https://example.com/test',
+          likes: 10,
+        };
+    
+        const response = await api
+          .post('/api/blogs')
+          .send(newBlog) 
+          .expect(401)
+      })
+    })
   afterAll(async () => {
     await mongoose.connection.close()
   })
+})

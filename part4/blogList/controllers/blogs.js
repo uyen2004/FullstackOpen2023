@@ -61,8 +61,6 @@ router.post('/', tokenExtractor, userExtractor, async (request, response) => {
 })
 
 
-
-
 router.delete('/:id', tokenExtractor, async (request, response) => {
   try {
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
@@ -100,8 +98,6 @@ router.delete('/:id', tokenExtractor, async (request, response) => {
     response.status(500).json({ error: 'Internal Server Error' })
   }
 })
-
-
 
 router.put('/:id', async (req, res) => {
   const id = req.params.id
